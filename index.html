@@ -430,7 +430,10 @@
 </blockquote>
 <p>什么叫做函数签名。。。不要问我吧。。–</p>
 <p>我们可以通过自己定义函数式接口，以lambda的表现形式为函数式接口的抽象方法提供实现，简单的说，即可以把抽象方法即行为参数化传递给要执行的方法体，其实就把之前的匿名内部类用lambda替换，实现一个函数式接口的实例。</p>
-<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3>
+<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>java8的lambda和匿名函数可以实现类似闭包式的事情，但是并不是真正意义的闭包，它可以作为参数传递给方法，并且可以访问其作用域之外的变量。但是，在lambda作用域内，不能修改所引用局部变量的值，也就是在lambda定义的方法作用域内，只能引用final类的局部变量。但是实例变量是可以访问的，因为实例变量都保存在堆上，堆内是线程共享的，而局部变量则保存在栈上。</p>
+<p>举个栗子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Person person = <span class="keyword">new</span> Person(<span class="string">"张飞"</span>,<span class="number">18</span>);</div><div class="line"></div><div class="line">Arrays.asList(<span class="keyword">new</span> Integer[]&#123;<span class="number">19</span>,<span class="number">20</span>,<span class="keyword">null</span>&#125;)</div><div class="line">          .stream().filter(it -&gt; it!=<span class="keyword">null</span>)</div><div class="line">          .forEach(it -&gt; &#123;</div><div class="line">            <span class="keyword">if</span>(it &gt; person.getAge())&#123;</div><div class="line">              System.out.println(<span class="string">"yes"</span>);</div><div class="line">            &#125;</div><div class="line">          &#125;);</div><div class="line">    </div><div class="line">person = <span class="keyword">new</span> Person(<span class="string">"曹操"</span>,<span class="number">20</span>);</div></pre></td></tr></table></figure>
+
           
         
       
