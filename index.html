@@ -306,6 +306,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/10/重温Java8之Optional/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mr.Potter">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.Potter's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/10/重温Java8之Optional/" itemprop="url">重温Java8之Optional</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-10T18:36:38+08:00">
+                2017-10-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote class="blockquote-center">一个人知道自己为什么而活，就可以忍受任何一种生活。——尼采</blockquote>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">前面我们简单介绍了lambda表达式，这篇我们说一下被严重低估的Optional。</div></pre></td></tr></table></figure>
+<h3 id="开门见山"><a href="#开门见山" class="headerlink" title="开门见山"></a>开门见山</h3><p>也许很多人都对scala和kotlin的空指针判断操作羡慕不已，而对java8的Optional嗤之以鼻。虽然Optional操作的确不如函数式语言那样优雅，但是用好了，依然是大杀器。</p>
+<p>先来感受下kotlin的判空操作：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> person = Person()</div><div class="line">person?.name = <span class="string">"曹操"</span>;</div></pre></td></tr></table></figure>
+<p>java7</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Person person = <span class="keyword">new</span> Person();</div><div class="line"><span class="keyword">if</span>(person.getName()!=<span class="keyword">null</span>)&#123;</div><div class="line">    person.setName(<span class="string">"曹操"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>java8</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Person person = <span class="keyword">new</span> Person();</div><div class="line">Optional.ofNullable(person)</div><div class="line">            .map(it -&gt; it.setName(<span class="string">"曹操"</span>));</div></pre></td></tr></table></figure>
+<h3 id="如何使用？"><a href="#如何使用？" class="headerlink" title="如何使用？"></a>如何使用？</h3><h5 id="如何创建Optinal对象"><a href="#如何创建Optinal对象" class="headerlink" title="如何创建Optinal对象"></a>如何创建Optinal对象</h5><ul>
+<li>声明一个空的Optional</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Optional&lt;Person&gt; person = Optional.empty();</div></pre></td></tr></table></figure>
+<ul>
+<li>非空值创建Optional</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Person person = <span class="keyword">new</span> Person();</div><div class="line">Optional&lt;Person&gt; optional = Optional.of(person);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>如果person为null，会立即抛出NPE，请你确保你要构造的对象不为空，再使用这种方法，否则使用下面这种方式。</p>
+</blockquote>
+<ul>
+<li>空值创建Optional</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Person person = <span class="keyword">null</span>;</div><div class="line">Optional&lt;Person&gt; optional = Optional.ofNullable(person);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>如果person为null，则optional则是空对象，注意如果直接get()任然会报NPE。</p>
+</blockquote>
+<h5 id="如何从Optinal提取值或者转换值"><a href="#如何从Optinal提取值或者转换值" class="headerlink" title="如何从Optinal提取值或者转换值"></a>如何从Optinal提取值或者转换值</h5><ul>
+<li>直接get()</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">person.get();</div></pre></td></tr></table></figure>
+<blockquote>
+<p>最危险的操作，若person值不存在，那么会报NoSuchElementException异常</p>
+</blockquote>
+<ul>
+<li>判断值是否存在</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(person.ifPresent)&#123;</div><div class="line">    person.get();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>典型防御式编程，几乎没有跟java7编程没有改变，不推荐。</p>
+</blockquote>
+<ul>
+<li>若值不存在，则赋予默认返回</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">person.orElse(<span class="keyword">new</span> Person());</div></pre></td></tr></table></figure>
+<ul>
+<li>若值不存在，则从别处获取</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">person.orElseGet(() -&gt; getObjectFactory());</div></pre></td></tr></table></figure>
+<ul>
+<li>若值存在，将值转换下再输出，若不存在，则默认返回</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">person.map(it -&gt; it.setName(<span class="string">"曹操"</span>)).orElse(<span class="keyword">new</span> Person());</div></pre></td></tr></table></figure>
+<h5 id="着重说下map函数"><a href="#着重说下map函数" class="headerlink" title="着重说下map函数"></a>着重说下map函数</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Data</span></div><div class="line"><span class="meta">@Accessors</span>(chain = <span class="keyword">true</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> Integer age;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> String city;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> House house;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"><span class="meta">@Data</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">House</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> size;</div><div class="line">  </div><div class="line">  <span class="keyword">private</span> Door door;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">@Data</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Door</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> String color;</div><div class="line"></div><div class="line">  <span class="keyword">private</span> String type;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>先看个栗子，我们对曹操进行判断，若曹操有房子，则我们给曹操换一个120平的大房子，然后再给房子换一个黑色的门，若房子门还没装，我们就装一个红色的。<br>我们分别用java7和java8两种方式实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">Person person = <span class="keyword">new</span> Person();</div><div class="line"></div><div class="line"><span class="keyword">if</span> (person.getHouse() != <span class="keyword">null</span>) &#123;</div><div class="line">      House house = person.getHouse();</div><div class="line">      house.setSize(<span class="number">120</span>);</div><div class="line">      <span class="keyword">if</span> (house.getDoor() != <span class="keyword">null</span>) &#123;</div><div class="line">        Door door = house.getDoor();</div><div class="line">        door.setColor(<span class="string">"black"</span>);</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        Door door = <span class="keyword">new</span> Door();</div><div class="line">        door.setColor(<span class="string">"red"</span>);</div><div class="line">        house.setDoor(door);</div><div class="line">      &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"> Optional.of(person)</div><div class="line">            .map(it -&gt; it.getHouse())</div><div class="line">            .map(it -&gt; &#123;</div><div class="line">              it.setSize(<span class="number">120</span>);</div><div class="line">              <span class="keyword">return</span> it;</div><div class="line">            &#125;)</div><div class="line">            .map(it -&gt; it.getDoor())</div><div class="line">            .map(it -&gt; &#123;</div><div class="line">              it.setColor(<span class="string">"black"</span>);</div><div class="line">              <span class="keyword">return</span> it;</div><div class="line">            &#125;).orElseGet(() -&gt; &#123;</div><div class="line">      Door door = <span class="keyword">new</span> Door();</div><div class="line">      door.setColor(<span class="string">"red"</span>);</div><div class="line">      <span class="keyword">return</span> door;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
+<p>当然，实际运用中，我们如果遇到很复杂的业务逻辑需要判断，也不会去用if else这种逻辑实现，这里只是举个例子说明map的强大之处。</p>
+<h5 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h5><p>我们还可以使用filter对Optinal对象进行过滤。</p>
+<p>举个栗子：我们只针对大于25岁的人，分配房子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Optional.of(person)</div><div class="line">            .filter(it -&gt; it.getAge() &gt; <span class="number">25</span>)</div><div class="line">            .map(it -&gt; it.getHouse())</div><div class="line">            .orElse(<span class="keyword">new</span> House());</div></pre></td></tr></table></figure>
+<h5 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h5><p>如果当我们包装成Optional对象，发现其属性或者对象不满足我们要求时，我们需要抛出异常</p>
+<p>还是直接看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(person.getHouse()==<span class="keyword">null</span>)&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"该人没有分到房子"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line">Optional.of(person)</div><div class="line">            .map(it -&gt; it.getHouse())</div><div class="line">            .orElseThrow(() -&gt; <span class="keyword">new</span> RuntimeException(<span class="string">"该人没有分到房子"</span>));</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>关于java8的Optional操作，我们暂且说这么多，以后还会有补充，如果对lambda表达式还不是很熟悉的童鞋，可以看这里<a href="https://mitrichevgoing.github.io/2017/10/10/%E9%87%8D%E6%B8%A9Java8%E4%B9%8BLambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/" target="_blank" rel="external">重温Java8之lambda表达式</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li>《java8实战》</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/10/重温Java8之Lambda表达式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -430,9 +617,15 @@
 </blockquote>
 <p>什么叫做函数签名。。。不要问我吧。。–</p>
 <p>我们可以通过自己定义函数式接口，以lambda的表现形式为函数式接口的抽象方法提供实现，简单的说，即可以把抽象方法即行为参数化传递给要执行的方法体，其实就把之前的匿名内部类用lambda替换，实现一个函数式接口的实例。</p>
+<hr>
 <h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>java8的lambda和匿名函数可以实现类似闭包式的事情，但是并不是真正意义的闭包，它可以作为参数传递给方法，并且可以访问其作用域之外的变量。但是，在lambda作用域内，不能修改所引用局部变量的值，也就是在lambda定义的方法作用域内，只能引用final类的局部变量。但是实例变量是可以访问的，因为实例变量都保存在堆上，堆内是线程共享的，而局部变量则保存在栈上。</p>
 <p>举个栗子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Person person = <span class="keyword">new</span> Person(<span class="string">"张飞"</span>,<span class="number">18</span>);</div><div class="line"></div><div class="line">Arrays.asList(<span class="keyword">new</span> Integer[]&#123;<span class="number">19</span>,<span class="number">20</span>,<span class="keyword">null</span>&#125;)</div><div class="line">          .stream().filter(it -&gt; it!=<span class="keyword">null</span>)</div><div class="line">          .forEach(it -&gt; &#123;</div><div class="line">            <span class="keyword">if</span>(it &gt; person.getAge())&#123;</div><div class="line">              System.out.println(<span class="string">"yes"</span>);</div><div class="line">            &#125;</div><div class="line">          &#125;);</div><div class="line">    </div><div class="line">person = <span class="keyword">new</span> Person(<span class="string">"曹操"</span>,<span class="number">20</span>);</div></pre></td></tr></table></figure>
+<hr>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li>《java8实战》</li>
+<li><a href="http://ifeve.com/lambda/" target="_blank" rel="external">http://ifeve.com/lambda/</a></li>
+</ul>
 
           
         
@@ -642,7 +835,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -655,7 +848,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
